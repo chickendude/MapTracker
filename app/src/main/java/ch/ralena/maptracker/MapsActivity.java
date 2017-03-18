@@ -21,6 +21,7 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+import ch.ralena.maptracker.fragments.FilterFragment;
 import ch.ralena.maptracker.objects.Position;
 
 public class MapsActivity extends Activity implements
@@ -29,6 +30,7 @@ public class MapsActivity extends Activity implements
 	public static final String TAG = MapsActivity.class.getSimpleName();
 	private static final int PERMISSION_FINE_LOCATION = 100;
 	public static final int RESOLUTION_REQUEST_CONNECTION_FAILURE = 101;
+	private static final String TAG_FILTER_FRAGMENT = "tag_filter_fragment";
 
 	private GoogleMap mMap;
 	private LocationHelper mLocationHelper;
@@ -56,6 +58,8 @@ public class MapsActivity extends Activity implements
 			@Override
 			public void onClick(View view) {
 				Toast.makeText(MapsActivity.this, "Load Filters", Toast.LENGTH_SHORT).show();
+				FilterFragment filterFragment = new FilterFragment();
+				filterFragment.show(getFragmentManager(), TAG_FILTER_FRAGMENT);
 			}
 		});
 
