@@ -7,6 +7,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -38,6 +41,23 @@ public class MapsActivity extends Activity implements
 		setContentView(R.layout.activity_maps);
 
 		mPositions = new ArrayList<>();
+
+		TextView settingsText = (TextView) findViewById(R.id.settingsTextView);
+		TextView filterText = (TextView) findViewById(R.id.filterTextView);
+
+		settingsText.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Toast.makeText(MapsActivity.this, "Load Settings Page", Toast.LENGTH_SHORT).show();
+			}
+		});
+
+		filterText.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				Toast.makeText(MapsActivity.this, "Load Filters", Toast.LENGTH_SHORT).show();
+			}
+		});
 
 		// Obtain the SupportMapFragment and get notified when the map is ready to be used.
 		MapFragment mapFragment = (MapFragment) getFragmentManager()
