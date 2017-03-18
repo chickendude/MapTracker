@@ -105,6 +105,7 @@ public class MapsActivity extends Activity implements
 	}
 
 	public void loadNewPosition(Position position) {
+		mPositions.add(position);
 		// format date to local time format
 		String date = SimpleDateFormat.getDateTimeInstance().format(position.getDate());
 		// Add a marker and move the camera there
