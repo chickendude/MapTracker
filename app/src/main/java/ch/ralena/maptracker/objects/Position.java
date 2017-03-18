@@ -32,4 +32,12 @@ public class Position {
 	public void setLongitude(double longitude) {
 		mLongitude = longitude;
 	}
+
+	public Date getDate() {
+		return mDate;
+	}
+
+	public void setDate(Date date) {
+		mDate = date;
+	}
 }
