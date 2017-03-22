@@ -1,23 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-			  android:orientation="vertical"
-			  android:layout_width="match_parent"
-			  android:layout_height="match_parent">
+<RelativeLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:padding="@dimen/fragmentPadding">
 
 	<TextView
-		android:id="@+id/startDateText"
-		android:layout_width="match_parent"
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="Start Date"/>
+		android:layout_alignParentTop="true"
+		android:text="@string/start_date"
+		android:textSize="25sp"/>
 
 	<TextView
-		android:id="@+id/endDateText"
-		android:layout_width="match_parent"
+		android:id="@+id/startDateLabel"
+		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:text="End Date"/>
+		android:layout_alignParentEnd="true"
+		android:background="@drawable/date_background"
+		android:textSize="25sp"
+		tools:text="3-4-2017"/>
 
-	<DatePicker
-		android:id="@+id/datePicker"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content"/>
-</LinearLayout>
+	<TextView
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_below="@id/startDateLabel"
+		android:text="@string/end_date"
+		android:textSize="25sp"/>
+
+	<TextView
+		android:id="@+id/endDateLabel"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_alignParentEnd="true"
+		android:layout_below="@id/startDateLabel"
+		android:background="@drawable/date_background"
+		android:textSize="25sp"
+		tools:text="3-4-2017"/>
+
+</RelativeLayout>

@@ -128,6 +128,7 @@ public class MapsActivity extends Activity implements
 		}
 	}
 
+	// run when we get a new position from LocationHelper
 	public void loadNewPosition(Position position) {
 		mPositions.add(position);
 		// format date to local time format
