@@ -18,7 +18,7 @@
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_alignParentEnd="true"
-		android:background="@drawable/date_background"
+		android:background="@drawable/underline"
 		android:textSize="25sp"
 		tools:text="3-4-2017"/>
 
@@ -35,7 +35,7 @@
 		android:layout_height="wrap_content"
 		android:layout_alignParentEnd="true"
 		android:layout_below="@id/startDateLabel"
-		android:background="@drawable/date_background"
+		android:background="@drawable/underline"
 		android:textSize="25sp"
 		tools:text="3-4-2017"/>
 

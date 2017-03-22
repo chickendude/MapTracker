@@ -51,7 +51,6 @@ public class FilterFragment extends DialogFragment {
 						updateDateTexts();
 					}
 				}, mStartDate.get(Calendar.YEAR), mStartDate.get(Calendar.MONTH), mStartDate.get(Calendar.DAY_OF_MONTH));
-				datePickerDialog.setTitle("Select Start Date");
 				datePickerDialog.show();
 			}
 		});
@@ -68,7 +67,6 @@ public class FilterFragment extends DialogFragment {
 						updateDateTexts();
 					}
 				}, mStartDate.get(Calendar.YEAR), mStartDate.get(Calendar.MONTH), mStartDate.get(Calendar.DAY_OF_MONTH));
-				datePickerDialog.setTitle("Select Start Date");
 				datePickerDialog.show();
 			}
 		});
