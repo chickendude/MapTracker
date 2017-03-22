@@ -55,6 +55,23 @@ public class FilterFragment extends DialogFragment {
 				datePickerDialog.show();
 			}
 		});
+		mEndDateLabel.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
+					@Override
+					public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+						mEndDate.set(year, month, day);
+						if (mStartDate.compareTo(mEndDate) == 1) {
+							mStartDate.set(year, month, day);
+						}
+						updateDateTexts();
+					}
+				}, mStartDate.get(Calendar.YEAR), mStartDate.get(Calendar.MONTH), mStartDate.get(Calendar.DAY_OF_MONTH));
+				datePickerDialog.setTitle("Select Start Date");
+				datePickerDialog.show();
+			}
+		});
 
 		return view;
 	}
