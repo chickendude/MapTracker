@@ -57,7 +57,6 @@ public class MapsActivity extends Activity implements
 		filterText.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				Toast.makeText(MapsActivity.this, "Load Filters", Toast.LENGTH_SHORT).show();
 				FilterFragment filterFragment = new FilterFragment();
 				filterFragment.show(getFragmentManager(), TAG_FILTER_FRAGMENT);
 			}
