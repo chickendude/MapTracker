@@ -71,8 +71,10 @@ public class LocationHelper implements
 	@Override
 	public void onConnected(@Nullable Bundle bundle) {
 		// set up location update request
-		LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
-		getLocation();
+		if (mMapsActivity.hasLocationPermission()) {
+			LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+			getLocation();
+		}
 	}
 
 	@Override

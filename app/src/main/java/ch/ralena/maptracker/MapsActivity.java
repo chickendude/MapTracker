@@ -23,6 +23,7 @@ import java.util.ArrayList;
 
 import ch.ralena.maptracker.fragments.FilterFragment;
 import ch.ralena.maptracker.objects.Position;
+import ch.ralena.maptracker.sql.SqlManager;
 
 public class MapsActivity extends Activity implements
 		OnMapReadyCallback {
@@ -35,6 +36,7 @@ public class MapsActivity extends Activity implements
 	private GoogleMap mMap;
 	private LocationHelper mLocationHelper;
 
+	private SqlManager mSqlManager;
 	private ArrayList<Position> mPositions;
 
 	@Override
@@ -42,6 +44,7 @@ public class MapsActivity extends Activity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_maps);
 
+		mSqlManager = new SqlManager(this);
 		mPositions = new ArrayList<>();
 
 		TextView settingsText = (TextView) findViewById(R.id.settingsTextView);
