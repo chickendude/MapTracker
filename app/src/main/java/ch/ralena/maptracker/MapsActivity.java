@@ -47,6 +47,17 @@ public class MapsActivity extends Activity implements
 		mSqlManager = new SqlManager(this);
 		mPositions = new ArrayList<>();
 
+		setUpButtons();
+
+		// Obtain the SupportMapFragment and get notified when the map is ready to be used.
+		MapFragment mapFragment = (MapFragment) getFragmentManager()
+				.findFragmentById(R.id.map);
+		mapFragment.getMapAsync(this);
+
+		mLocationHelper = new LocationHelper(this);
+	}
+
+	private void setUpButtons() {
 		TextView settingsText = (TextView) findViewById(R.id.settingsTextView);
 		TextView filterText = (TextView) findViewById(R.id.filterTextView);
 
@@ -64,13 +75,6 @@ public class MapsActivity extends Activity implements
 				filterFragment.show(getFragmentManager(), TAG_FILTER_FRAGMENT);
 			}
 		});
-
-		// Obtain the SupportMapFragment and get notified when the map is ready to be used.
-		MapFragment mapFragment = (MapFragment) getFragmentManager()
-				.findFragmentById(R.id.map);
-		mapFragment.getMapAsync(this);
-
-		mLocationHelper = new LocationHelper(this);
 	}
 
 	@Override
@@ -98,6 +102,7 @@ public class MapsActivity extends Activity implements
 	public void onMapReady(GoogleMap googleMap) {
 		Log.d(TAG, "onMapReady");
 		mMap = googleMap;
+		loadPositions();
 	}
 
 	public boolean hasLocationPermission() {
@@ -141,5 +146,17 @@ public class MapsActivity extends Activity implements
 		LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
 		mMap.addMarker(new MarkerOptions().position(latLng).title("Here on " + date));
 		mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+	}
+
+	public void loadPositions() {
+		mPositions = mSqlManager.getPositions();
+		for (Position position : mPositions) {
+			// format date to local time format
+			String date = SimpleDateFormat.getDateTimeInstance().format(position.getDate());
+			Log.d(TAG, date);
+			// Add a marker
+			LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
+			mMap.addMarker(new MarkerOptions().position(latLng).title("Here on " + date));
+		}
 	}
 }
