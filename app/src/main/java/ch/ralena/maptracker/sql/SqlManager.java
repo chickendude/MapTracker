@@ -4,7 +4,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -37,18 +36,22 @@ public class SqlManager {
 	public ArrayList<Position> getPositions() {
 		ArrayList<Position> positions = new ArrayList<>();
 		SQLiteDatabase database = mSqlHelper.getWritableDatabase();
-
 		Cursor itemCursor = database.rawQuery("SELECT * FROM " + SqlHelper.TABLE_POSITION, null);
 		if (itemCursor.moveToFirst()) {
 			do {
-				long latitude = itemCursor.getLong(itemCursor.getColumnIndex(SqlHelper.COL_POSITION_LATITUDE));
-				long longitude = itemCursor.getLong(itemCursor.getColumnIndex(SqlHelper.COL_POSITION_LONGITUDE));
-				Date date = new Date((long)itemCursor.getInt(itemCursor.getColumnIndex(SqlHelper.COL_POSITION_DATE))*1000);
+				// get column indices
+				int latitudeIndex = itemCursor.getColumnIndex(SqlHelper.COL_POSITION_LATITUDE);
+				int longitudeIndex = itemCursor.getColumnIndex(SqlHelper.COL_POSITION_LONGITUDE);
+				int dateIndex = itemCursor.getColumnIndex(SqlHelper.COL_POSITION_DATE);
+				// get cursor values
+				long latitude = itemCursor.getLong(latitudeIndex);
+				long longitude = itemCursor.getLong(longitudeIndex);
+				Date date = new Date((long)itemCursor.getInt(dateIndex)*1000);
+				// add to ArrayList
 				positions.add(new Position(latitude, longitude, date));
 			} while (itemCursor.moveToNext());
 		}
 		itemCursor.close();
-
 		database.close();
 		return positions;
 	}
