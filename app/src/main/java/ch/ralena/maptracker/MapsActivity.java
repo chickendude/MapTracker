@@ -2,6 +2,7 @@ package ch.ralena.maptracker;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -9,7 +10,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -27,6 +27,7 @@ import ch.ralena.maptracker.sql.SqlManager;
 
 public class MapsActivity extends Activity implements
 		OnMapReadyCallback {
+
 
 	public static final String TAG = MapsActivity.class.getSimpleName();
 	private static final int PERMISSION_FINE_LOCATION = 100;
@@ -64,7 +65,8 @@ public class MapsActivity extends Activity implements
 		settingsText.setOnClickListener(new View.OnClickListener() {
 			@Override
 			public void onClick(View view) {
-				Toast.makeText(MapsActivity.this, "Load Settings Page", Toast.LENGTH_SHORT).show();
+				Intent intent = new Intent(MapsActivity.this, SettingsActivity.class);
+				startActivity(intent);
 			}
 		});
 
