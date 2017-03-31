@@ -3,9 +3,11 @@ package ch.ralena.maptracker;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
@@ -36,6 +38,7 @@ public class MapsActivity extends Activity implements
 
 	private GoogleMap mMap;
 	private LocationHelper mLocationHelper;
+	private SharedPreferences mSharedPreferences;
 
 	private SqlManager mSqlManager;
 	private ArrayList<Position> mPositions;
@@ -45,6 +48,7 @@ public class MapsActivity extends Activity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_maps);
 
+		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 		mSqlManager = new SqlManager(this);
 		mPositions = new ArrayList<>();
 
