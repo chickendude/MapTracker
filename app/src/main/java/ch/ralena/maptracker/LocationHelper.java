@@ -34,7 +34,7 @@ public class LocationHelper implements
 	private LocationRequest mLocationRequest;
 
 
-	public LocationHelper(MapsActivity mapsActivity) {
+	public LocationHelper(MapsActivity mapsActivity, long interval) {
 		mMapsActivity = mapsActivity;
 		// set up API client
 		mGoogleApiClient = new GoogleApiClient.Builder(mMapsActivity)
@@ -47,8 +47,8 @@ public class LocationHelper implements
 		// todo: pull from preferences
 		mLocationRequest = LocationRequest.create()
 				.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-				.setInterval(10 * 1000)
-				.setFastestInterval(1 * 1000);
+				.setInterval(interval)
+				.setFastestInterval(interval);
 	}
 
 

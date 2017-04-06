@@ -3,11 +3,9 @@ package ch.ralena.maptracker;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
@@ -30,7 +28,6 @@ import ch.ralena.maptracker.sql.SqlManager;
 public class MapsActivity extends Activity implements
 		OnMapReadyCallback {
 
-
 	public static final String TAG = MapsActivity.class.getSimpleName();
 	private static final int PERMISSION_FINE_LOCATION = 100;
 	public static final int RESOLUTION_REQUEST_CONNECTION_FAILURE = 101;
@@ -38,7 +35,7 @@ public class MapsActivity extends Activity implements
 
 	private GoogleMap mMap;
 	private LocationHelper mLocationHelper;
-	private SharedPreferences mSharedPreferences;
+	private PreferencesHelper mPreferencesHelper;
 
 	private SqlManager mSqlManager;
 	private ArrayList<Position> mPositions;
@@ -48,7 +45,7 @@ public class MapsActivity extends Activity implements
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_maps);
 
-		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+		mPreferencesHelper = new PreferencesHelper(this);
 		mSqlManager = new SqlManager(this);
 		mPositions = new ArrayList<>();
 
@@ -58,8 +55,7 @@ public class MapsActivity extends Activity implements
 		MapFragment mapFragment = (MapFragment) getFragmentManager()
 				.findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
-
-		mLocationHelper = new LocationHelper(this);
+		mLocationHelper = new LocationHelper(this, (long)mPreferencesHelper.getMinutes()*1000*60);
 	}
 
 	private void setUpButtons() {
@@ -151,7 +147,10 @@ public class MapsActivity extends Activity implements
 		// Add a marker and move the camera there
 		LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
 		mMap.addMarker(new MarkerOptions().position(latLng).title("Here on " + date));
-		mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+		// check whether we should move the map or not
+		if (mPreferencesHelper.isMoveMap()) {
+			mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+		}
 	}
 
 	public void loadPositions() {

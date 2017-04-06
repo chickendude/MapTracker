@@ -3,12 +3,14 @@
 				  android:layout_width="match_parent"
 				  android:layout_height="match_parent">
 	<SwitchPreference
-		android:title="Scroll to new location"
-		android:summary="Center the map on a new location when it gets drawn to the map"
 		android:defaultValue="true"
-		android:key="moveMap"/>
+		android:key="moveMap"
+		android:summary="Center the map on a new location when it gets drawn to the map"
+		android:title="Scroll to new location"/>
 	<EditTextPreference
-		android:title="Minutes between update"
-		android:summary="How many minutes to wait between polling the phone for a new GPS location"/>
+		android:key="minutesBetweenUpdate"
+		android:numeric="decimal"
+		android:summary="How many minutes to wait between polling the phone for a new GPS location"
+		android:title="Minutes between update"/>
 
 </PreferenceScreen>

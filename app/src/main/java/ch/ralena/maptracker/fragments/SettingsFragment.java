@@ -11,6 +11,8 @@ import ch.ralena.maptracker.R;
  */
 
 public class SettingsFragment extends PreferenceFragment {
+	private static final String TAG = SettingsFragment.class.getSimpleName();
+
 	@Override
 	public void onCreate(@Nullable Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
