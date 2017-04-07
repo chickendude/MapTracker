@@ -1,5 +1,6 @@
 package ch.ralena.maptracker;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
@@ -11,12 +12,12 @@ public class PreferencesHelper {
 	public static final String MINUTES_BETWEEN_UPDATE = "minutesBetweenUpdate";
 	public static final String MOVE_MAP = "moveMap";
 
-	private MapsActivity mMapsActivity;
+	private Context mContext;
 	private SharedPreferences mSharedPreferences;
 
-	public PreferencesHelper(MapsActivity mapsActivity) {
-		mMapsActivity = mapsActivity;
-		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mMapsActivity);
+	public PreferencesHelper(Context context) {
+		mContext = context;
+		mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(mContext);
 	}
 
 	public boolean isMoveMap() {

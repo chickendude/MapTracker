@@ -2,6 +2,7 @@ package ch.ralena.maptracker;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -23,6 +24,8 @@ import java.util.ArrayList;
 
 import ch.ralena.maptracker.fragments.FilterFragment;
 import ch.ralena.maptracker.objects.Position;
+import ch.ralena.maptracker.service.MapLocationService;
+import ch.ralena.maptracker.service.MapLocationServiceConnection;
 import ch.ralena.maptracker.sql.SqlManager;
 
 public class MapsActivity extends Activity implements
@@ -40,6 +43,8 @@ public class MapsActivity extends Activity implements
 	private SqlManager mSqlManager;
 	private ArrayList<Position> mPositions;
 
+	private MapLocationServiceConnection mServiceConnection;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -48,6 +53,7 @@ public class MapsActivity extends Activity implements
 		mPreferencesHelper = new PreferencesHelper(this);
 		mSqlManager = new SqlManager(this);
 		mPositions = new ArrayList<>();
+		mServiceConnection = new MapLocationServiceConnection();
 
 		setUpButtons();
 
@@ -56,6 +62,22 @@ public class MapsActivity extends Activity implements
 				.findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
 		mLocationHelper = new LocationHelper(this, (long)mPreferencesHelper.getMinutes()*1000*60);
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		Intent intent = new Intent(this, MapLocationService.class);
+		bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+		if (mServiceConnection.isBound()) {
+			unbindService(mServiceConnection);
+			mServiceConnection.setIsBound(false);
+		}
 	}
 
 	private void setUpButtons() {
