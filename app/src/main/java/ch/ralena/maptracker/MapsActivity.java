@@ -35,7 +35,6 @@ public class MapsActivity extends Activity implements
 
 	public static final String TAG = MapsActivity.class.getSimpleName();
 	private static final int PERMISSION_FINE_LOCATION = 100;
-	public static final int RESOLUTION_REQUEST_CONNECTION_FAILURE = 101;
 	private static final String TAG_FILTER_FRAGMENT = "tag_filter_fragment";
 
 	private GoogleMap mMap;
@@ -94,6 +93,11 @@ public class MapsActivity extends Activity implements
 			unbindService(mServiceConnection);
 			mIsBound = false;
 		}
+	}
+
+	@Override
+	public void onBackPressed() {
+		moveTaskToBack(true);
 	}
 
 	@Override

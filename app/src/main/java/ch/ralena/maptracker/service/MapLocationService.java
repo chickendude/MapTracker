@@ -21,7 +21,6 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
-import ch.ralena.maptracker.MapsActivity;
 import ch.ralena.maptracker.PreferencesHelper;
 
 /**
@@ -30,7 +29,6 @@ import ch.ralena.maptracker.PreferencesHelper;
 
 public class MapLocationService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 	private static final String TAG = MapLocationService.class.getSimpleName();
-	private static final int PERMISSION_FINE_LOCATION = 100;
 	public static final int RESOLUTION_REQUEST_CONNECTION_FAILURE = 101;
 
 	private IBinder mBinder = new LocalBinder();
@@ -104,7 +102,7 @@ public class MapLocationService extends Service implements GoogleApiClient.Conne
 	public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
 		if (connectionResult.hasResolution()) {
 			try {
-				connectionResult.startResolutionForResult(mPermissionRequestActivity, MapsActivity.RESOLUTION_REQUEST_CONNECTION_FAILURE);
+				connectionResult.startResolutionForResult(mPermissionRequestActivity, RESOLUTION_REQUEST_CONNECTION_FAILURE);
 			} catch (IntentSender.SendIntentException e) {
 				e.printStackTrace();
 			}
@@ -148,17 +146,7 @@ public class MapLocationService extends Service implements GoogleApiClient.Conne
 	}
 
 	public class PermissionRequestActivity extends AppCompatActivity {
-		@Override
-		public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-			super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-			// check if we got a result
-			if (requestCode == PERMISSION_FINE_LOCATION) {
-				if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-					// Add a marker in Sydney and move the camera
-					getLocation();
-				}
-			}
-		}
+
 	}
 
 
