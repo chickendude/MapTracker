@@ -2,11 +2,14 @@ package ch.ralena.maptracker;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.View;
@@ -25,7 +28,6 @@ import java.util.ArrayList;
 import ch.ralena.maptracker.fragments.FilterFragment;
 import ch.ralena.maptracker.objects.Position;
 import ch.ralena.maptracker.service.MapLocationService;
-import ch.ralena.maptracker.service.MapLocationServiceConnection;
 import ch.ralena.maptracker.sql.SqlManager;
 
 public class MapsActivity extends Activity implements
@@ -37,13 +39,25 @@ public class MapsActivity extends Activity implements
 	private static final String TAG_FILTER_FRAGMENT = "tag_filter_fragment";
 
 	private GoogleMap mMap;
-	private LocationHelper mLocationHelper;
 	private PreferencesHelper mPreferencesHelper;
 
 	private SqlManager mSqlManager;
 	private ArrayList<Position> mPositions;
+	private boolean mIsBound;
+	private MapLocationService mMapLocationService;
+	private ServiceConnection mServiceConnection = new ServiceConnection() {
+		@Override
+		public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+			mIsBound = true;
+			MapLocationService.LocalBinder localBinder = (MapLocationService.LocalBinder) iBinder;
+			mMapLocationService = localBinder.getService();
+		}
 
-	private MapLocationServiceConnection mServiceConnection;
+		@Override
+		public void onServiceDisconnected(ComponentName componentName) {
+			mIsBound = false;
+		}
+	};
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +67,9 @@ public class MapsActivity extends Activity implements
 		mPreferencesHelper = new PreferencesHelper(this);
 		mSqlManager = new SqlManager(this);
 		mPositions = new ArrayList<>();
-		mServiceConnection = new MapLocationServiceConnection();
+		mIsBound = false;
+		Intent intent = new Intent(this, MapLocationService.class);
+		startService(intent);
 
 		setUpButtons();
 
@@ -61,7 +77,6 @@ public class MapsActivity extends Activity implements
 		MapFragment mapFragment = (MapFragment) getFragmentManager()
 				.findFragmentById(R.id.map);
 		mapFragment.getMapAsync(this);
-		mLocationHelper = new LocationHelper(this, (long)mPreferencesHelper.getMinutes()*1000*60);
 	}
 
 	@Override
@@ -74,11 +89,21 @@ public class MapsActivity extends Activity implements
 	@Override
 	protected void onStop() {
 		super.onStop();
-		if (mServiceConnection.isBound()) {
+		if (mIsBound) {
 			unbindService(mServiceConnection);
-			mServiceConnection.setIsBound(false);
+			mIsBound = false;
 		}
 	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		if (mMapLocationService != null) {
+			mMapLocationService.killService();
+		}
+	}
+
+
 
 	private void setUpButtons() {
 		TextView settingsText = (TextView) findViewById(R.id.settingsTextView);
@@ -104,13 +129,11 @@ public class MapsActivity extends Activity implements
 	@Override
 	protected void onResume() {
 		super.onResume();
-		mLocationHelper.connect();
 	}
 
 	@Override
 	protected void onPause() {
 		super.onPause();
-		mLocationHelper.disconnect();
 	}
 
 	/**
@@ -132,8 +155,7 @@ public class MapsActivity extends Activity implements
 	public boolean hasLocationPermission() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
-			&& checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
-			{
+					&& checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 				Log.d(TAG, "Ask for permissions!");
 				requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
 				return false;
@@ -154,7 +176,9 @@ public class MapsActivity extends Activity implements
 		if (requestCode == PERMISSION_FINE_LOCATION) {
 			if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 				// Add a marker in Sydney and move the camera
-				mLocationHelper.getLocation();
+				if(mIsBound) {
+					mMapLocationService.getLocation();
+				}
 			}
 		}
 	}
