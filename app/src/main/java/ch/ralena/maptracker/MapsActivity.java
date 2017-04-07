@@ -82,6 +82,7 @@ public class MapsActivity extends Activity implements
 	@Override
 	protected void onStart() {
 		super.onStart();
+		checkLocationPermission();
 		Intent intent = new Intent(this, MapLocationService.class);
 		bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
 	}
@@ -102,8 +103,6 @@ public class MapsActivity extends Activity implements
 			mMapLocationService.killService();
 		}
 	}
-
-
 
 	private void setUpButtons() {
 		TextView settingsText = (TextView) findViewById(R.id.settingsTextView);
@@ -152,18 +151,13 @@ public class MapsActivity extends Activity implements
 		loadPositions();
 	}
 
-	public boolean hasLocationPermission() {
+	public void checkLocationPermission() {
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
 					&& checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
 				Log.d(TAG, "Ask for permissions!");
 				requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
-				return false;
-			} else {
-				return true;
 			}
-		} else {
-			return true;
 		}
 	}
 

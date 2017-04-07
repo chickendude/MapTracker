@@ -124,8 +124,7 @@ public class MapLocationService extends Service implements GoogleApiClient.Conne
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
 					&& checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-				Log.d(TAG, "Ask for permissions!");
-				mPermissionRequestActivity.requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
+				Log.d(TAG, "No permissions!");
 				return false;
 			} else {
 				return true;

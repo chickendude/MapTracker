@@ -10,6 +10,7 @@
 	<EditTextPreference
 		android:key="minutesBetweenUpdate"
 		android:numeric="decimal"
+		android:defaultValue="15"
 		android:summary="How many minutes to wait between polling the phone for a new GPS location"
 		android:title="Minutes between update"/>
 

@@ -25,7 +25,7 @@ public class PreferencesHelper {
 	}
 
 	public float getMinutes() {
-		String minutes = mSharedPreferences.getString(MINUTES_BETWEEN_UPDATE, null);
+		String minutes = mSharedPreferences.getString(MINUTES_BETWEEN_UPDATE, "15");
 		return Float.parseFloat(minutes);
 	}
 
