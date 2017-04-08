@@ -80,7 +80,7 @@ public class MapsActivity extends Activity implements
 
 		mPreferencesHelper = new PreferencesHelper(this);
 		mSqlManager = new SqlManager(this);
-		mPositions = new ArrayList<>();
+		mPositions = mSqlManager.getPositions();
 		mIsBound = false;
 		Intent intent = new Intent(this, MapLocationService.class);
 		startService(intent);
@@ -197,7 +197,7 @@ public class MapsActivity extends Activity implements
 				return view;
 			}
 		});
-		loadPositions();
+		mCurDateRange = loadMarkers();
 	}
 
 	public void checkLocationPermission() {
@@ -236,8 +236,7 @@ public class MapsActivity extends Activity implements
 		}
 	}
 
-	public void loadPositions() {
-		mPositions = mSqlManager.getPositions();
+	public DateRange loadMarkers() {
 		for (Position position : mPositions) {
 			// format date to local time format
 			String date = SimpleDateFormat.getDateTimeInstance().format(position.getDate());
@@ -253,7 +252,7 @@ public class MapsActivity extends Activity implements
 			startDate.setTime(start);
 			endDate.setTime(end);
 		}
-		mCurDateRange = new DateRange(startDate, endDate);
+		return new DateRange(startDate, endDate);
 	}
 
 	private LatLng addMapMarker(Position position) {
@@ -271,6 +270,8 @@ public class MapsActivity extends Activity implements
 	@Override
 	public void onDateChanged() {
 		Log.d(TAG, "Date changed!");
-
+		mPositions = mSqlManager.getPositions(mCurDateRange);
+		mMap.clear();
+		loadMarkers();
 	}
 }

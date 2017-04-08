@@ -8,6 +8,7 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.Date;
 
+import ch.ralena.maptracker.objects.DateRange;
 import ch.ralena.maptracker.objects.Position;
 
 /**
@@ -34,28 +35,38 @@ public class SqlManager {
 	}
 
 	public ArrayList<Position> getPositions() {
-		ArrayList<Position> positions = new ArrayList<>();
-		SQLiteDatabase database = mSqlHelper.getWritableDatabase();
-		Cursor itemCursor = database.rawQuery("SELECT * FROM " + SqlHelper.TABLE_POSITION, null);
-		if (itemCursor.moveToFirst()) {
-			do {
-				// get column indices
-				int latitudeIndex = itemCursor.getColumnIndex(SqlHelper.COL_POSITION_LATITUDE);
-				int longitudeIndex = itemCursor.getColumnIndex(SqlHelper.COL_POSITION_LONGITUDE);
-				int dateIndex = itemCursor.getColumnIndex(SqlHelper.COL_POSITION_DATE);
-				// get cursor values
-				double latitude = itemCursor.getDouble(latitudeIndex);
-				double longitude = itemCursor.getDouble(longitudeIndex);
-				Date date = new Date((long)itemCursor.getInt(dateIndex)*1000);
-				// add to ArrayList
-				positions.add(new Position(latitude, longitude, date));
-			} while (itemCursor.moveToNext());
-		}
-		itemCursor.close();
-		database.close();
-		return positions;
+		return getPositionsSql("SELECT * FROM " + SqlHelper.TABLE_POSITION);
 	}
 
 
+	public ArrayList<Position> getPositions(DateRange curDateRange) {
+		int startDate = (int) (curDateRange.getStartDate().getTimeInMillis()/1000);
+		int endDate = (int) (curDateRange.getEndDate().getTimeInMillis()/1000);
+		return getPositionsSql("SELECT * FROM " + SqlHelper.TABLE_POSITION +
+				String.format(" WHERE %s >= %d AND %s <= %d", SqlHelper.COL_POSITION_DATE, startDate,
+						SqlHelper.COL_POSITION_DATE, endDate));
+	}
 
+	public ArrayList<Position> getPositionsSql(String query) {
+		ArrayList<Position> positions = new ArrayList<>();
+		SQLiteDatabase database = mSqlHelper.getWritableDatabase();
+		Cursor cursor = database.rawQuery(query, null);
+		if (cursor.moveToFirst()) {
+			do {
+				// get column indices
+				int latitudeIndex = cursor.getColumnIndex(SqlHelper.COL_POSITION_LATITUDE);
+				int longitudeIndex = cursor.getColumnIndex(SqlHelper.COL_POSITION_LONGITUDE);
+				int dateIndex = cursor.getColumnIndex(SqlHelper.COL_POSITION_DATE);
+				// get cursor values
+				double latitude = cursor.getDouble(latitudeIndex);
+				double longitude = cursor.getDouble(longitudeIndex);
+				Date date = new Date((long)cursor.getInt(dateIndex)*1000);
+				// add to ArrayList
+				positions.add(new Position(latitude, longitude, date));
+			} while (cursor.moveToNext());
+		}
+		cursor.close();
+		database.close();
+		return positions;
+	}
 }

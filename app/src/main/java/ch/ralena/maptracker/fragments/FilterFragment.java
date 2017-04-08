@@ -87,7 +87,7 @@ public class FilterFragment extends DialogFragment {
 					@Override
 					public void onDateSet(DatePicker datePicker, int year, int month, int day) {
 						mDateChangeListener.onDateChanged();
-						mEndDate.set(year, month, day);
+						mEndDate.set(year, month, day, 23, 59, 59);
 						if (mStartDate.compareTo(mEndDate) == 1) {
 							mEndDate.set(year, month, day);
 						}
