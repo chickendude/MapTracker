@@ -32,14 +32,17 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 import ch.ralena.maptracker.fragments.FilterFragment;
+import ch.ralena.maptracker.objects.DateRange;
 import ch.ralena.maptracker.objects.Position;
 import ch.ralena.maptracker.service.MapLocationService;
 import ch.ralena.maptracker.sql.SqlManager;
 
 public class MapsActivity extends Activity implements
-		OnMapReadyCallback {
+		OnMapReadyCallback, FilterFragment.FilterDateChangeListener {
 
 	public static final String TAG = MapsActivity.class.getSimpleName();
 	private static final int PERMISSION_FINE_LOCATION = 100;
@@ -51,6 +54,7 @@ public class MapsActivity extends Activity implements
 	private SqlManager mSqlManager;
 	private ArrayList<Position> mPositions;
 	private boolean mIsBound;
+	private DateRange mCurDateRange;
 	private MapLocationService mMapLocationService;
 	private ServiceConnection mServiceConnection = new ServiceConnection() {
 		@Override
@@ -144,6 +148,9 @@ public class MapsActivity extends Activity implements
 			@Override
 			public void onClick(View view) {
 				FilterFragment filterFragment = new FilterFragment();
+				Bundle bundle = new Bundle();
+				bundle.putParcelable(FilterFragment.BUNDLE_DATERANGE, mCurDateRange);
+				filterFragment.setArguments(bundle);
 				filterFragment.show(getFragmentManager(), TAG_FILTER_FRAGMENT);
 			}
 		});
@@ -221,14 +228,8 @@ public class MapsActivity extends Activity implements
 	// run when we get a new position from LocationHelper
 	public void loadNewPosition(Position position) {
 		mPositions.add(position);
-		// format date to local time format
-		String date = SimpleDateFormat.getDateTimeInstance().format(position.getDate());
-		// Add a marker and move the camera there
-		LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-		mMap.addMarker(new MarkerOptions()
-				.position(latLng)
-				.title("Here on " + date)
-				.snippet("Latitude: " + position.getLatitude() + "\nLongitude: " + position.getLongitude()));
+		LatLng latLng = addMapMarker(position);
+
 		// check whether we should move the map or not
 		if (mPreferencesHelper.isMoveMap()) {
 			mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
@@ -241,12 +242,35 @@ public class MapsActivity extends Activity implements
 			// format date to local time format
 			String date = SimpleDateFormat.getDateTimeInstance().format(position.getDate());
 			// Add a marker
-			LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-			Log.d(TAG, latLng.toString());
-			mMap.addMarker(new MarkerOptions()
-					.position(latLng)
-					.title("Here on " + date)
-					.snippet("Latitude: " + position.getLatitude() + "\nLongitude: " + position.getLongitude()));
+			addMapMarker(position);
 		}
+		// create daterange
+		Calendar startDate = Calendar.getInstance();
+		Calendar endDate = Calendar.getInstance();
+		if (mPositions.size() > 0) {
+			Date start = mPositions.get(0).getDate();
+			Date end = mPositions.get(mPositions.size()-1).getDate();
+			startDate.setTime(start);
+			endDate.setTime(end);
+		}
+		mCurDateRange = new DateRange(startDate, endDate);
+	}
+
+	private LatLng addMapMarker(Position position) {
+		// format date to local time format
+		String date = SimpleDateFormat.getDateTimeInstance().format(position.getDate());
+		// Add a marker and move the camera there
+		LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
+		mMap.addMarker(new MarkerOptions()
+				.position(latLng)
+				.title("Here on " + date)
+				.snippet("Latitude: " + position.getLatitude() + "\nLongitude: " + position.getLongitude()));
+		return latLng;
+	}
+
+	@Override
+	public void onDateChanged() {
+		Log.d(TAG, "Date changed!");
+
 	}
 }

@@ -30,8 +30,8 @@ public class PreferencesHelper {
 		return Float.parseFloat(minutes);
 	}
 
-	public static String getMetersBetweenLocation() {
-		return METERS_BETWEEN_LOCATION;
+	public String getMetersBetweenLocation() {
+		return mSharedPreferences.getString(METERS_BETWEEN_LOCATION, "15");
 	}
 
 	public SharedPreferences getSharedPreferences() {
