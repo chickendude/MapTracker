@@ -50,6 +50,7 @@ public class MapsActivity extends Activity implements
 	private ServiceConnection mServiceConnection = new ServiceConnection() {
 		@Override
 		public void onServiceConnected(ComponentName componentName, IBinder iBinder) {
+			Log.d(TAG, "Service connected");
 			mIsBound = true;
 			MapLocationService.LocalBinder localBinder = (MapLocationService.LocalBinder) iBinder;
 			mMapLocationService = localBinder.getService();
@@ -97,8 +98,7 @@ public class MapsActivity extends Activity implements
 		super.onStart();
 		checkLocationPermission();
 		Intent intent = new Intent(this, MapLocationService.class);
-		boolean bound = bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
-		Log.d(TAG, "Bound: " + bound);
+		bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
 	}
 
 	@Override

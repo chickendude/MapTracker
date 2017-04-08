@@ -72,26 +72,26 @@ public class MapLocationService extends Service implements GoogleApiClient.Conne
 				.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
 				.setInterval(interval)
 				.setFastestInterval(interval);
+		mGoogleApiClient.connect();
 	}
 
 	@Nullable
 	@Override
 	public IBinder onBind(Intent intent) {
 		Log.d(TAG, "Service Bound");
-		mGoogleApiClient.connect();
 		return mBinder;
 	}
 
 	@Override
 	public boolean onUnbind(Intent intent) {
 		Log.d(TAG, "Service Unbound");
-		mGoogleApiClient.disconnect();
 		return super.onUnbind(intent);
 	}
 
 	@Override
 	public void onDestroy() {
 		Log.d(TAG, "Service Destroyed");
+		mGoogleApiClient.disconnect();
 		super.onDestroy();
 	}
 
