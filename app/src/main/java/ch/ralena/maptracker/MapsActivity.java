@@ -2,15 +2,18 @@ package ch.ralena.maptracker;
 
 import android.Manifest;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -57,6 +60,8 @@ public class MapsActivity extends Activity implements
 			mIsBound = false;
 		}
 	};
+	// message receiver
+	private BroadcastReceiver mBroadcastReceiver;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +74,14 @@ public class MapsActivity extends Activity implements
 		mIsBound = false;
 		Intent intent = new Intent(this, MapLocationService.class);
 		startService(intent);
+		mBroadcastReceiver = new BroadcastReceiver() {
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				Position position = intent.getParcelableExtra(MapLocationService.EXTRA_LOCATION);
+				loadNewPosition(position);
+			}
+		};
+		LocalBroadcastManager.getInstance(this).registerReceiver(mBroadcastReceiver, new IntentFilter(MapLocationService.INTENT_LOCATION_RECEIVED));
 
 		setUpButtons();
 
@@ -80,10 +93,12 @@ public class MapsActivity extends Activity implements
 
 	@Override
 	protected void onStart() {
+		Log.d(TAG, "onStart");
 		super.onStart();
 		checkLocationPermission();
 		Intent intent = new Intent(this, MapLocationService.class);
-		bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+		boolean bound = bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+		Log.d(TAG, "Bound: " + bound);
 	}
 
 	@Override
@@ -174,7 +189,7 @@ public class MapsActivity extends Activity implements
 		if (requestCode == PERMISSION_FINE_LOCATION) {
 			if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 				// Add a marker in Sydney and move the camera
-				if(mIsBound) {
+				if (mIsBound) {
 					mMapLocationService.getLocation();
 				}
 			}
@@ -184,7 +199,7 @@ public class MapsActivity extends Activity implements
 	// run when we get a new position from LocationHelper
 	public void loadNewPosition(Position position) {
 		mPositions.add(position);
-		mSqlManager.insertPosition(position); // returns id as a long value
+//		mSqlManager.insertPosition(position); // returns id as a long value
 
 		// format date to local time format
 		String date = SimpleDateFormat.getDateTimeInstance().format(position.getDate());
@@ -202,7 +217,6 @@ public class MapsActivity extends Activity implements
 		for (Position position : mPositions) {
 			// format date to local time format
 			String date = SimpleDateFormat.getDateTimeInstance().format(position.getDate());
-			Log.d(TAG, date);
 			// Add a marker
 			LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
 			mMap.addMarker(new MarkerOptions().position(latLng).title("Here on " + date));

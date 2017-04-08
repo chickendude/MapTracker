@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
@@ -21,7 +22,11 @@ import com.google.android.gms.location.LocationListener;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
 
+import java.util.Date;
+
 import ch.ralena.maptracker.PreferencesHelper;
+import ch.ralena.maptracker.objects.Position;
+import ch.ralena.maptracker.sql.SqlManager;
 
 /**
  * Created by crater-windoze on 4/8/2017.
@@ -30,18 +35,22 @@ import ch.ralena.maptracker.PreferencesHelper;
 public class MapLocationService extends Service implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, LocationListener {
 	private static final String TAG = MapLocationService.class.getSimpleName();
 	public static final int RESOLUTION_REQUEST_CONNECTION_FAILURE = 101;
+	public static String INTENT_LOCATION_RECEIVED = "location_received";
+	public static final String EXTRA_LOCATION = "location";
 
 	private IBinder mBinder = new LocalBinder();
 	private PreferencesHelper mPreferencesHelper;
 	private GoogleApiClient mGoogleApiClient;
 	private LocationRequest mLocationRequest;
+	private Location mPreviousLocation;
+	private SqlManager mSqlManager;
 
 	PermissionRequestActivity mPermissionRequestActivity;
 
-
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {
-		return Service.START_NOT_STICKY;
+		Log.d(TAG, "Service started");
+		return Service.START_STICKY;
 	}
 
 	@Override
@@ -49,6 +58,7 @@ public class MapLocationService extends Service implements GoogleApiClient.Conne
 		Log.d(TAG, "Service Created");
 		super.onCreate();
 		// initialize variables
+		mSqlManager = new SqlManager(this);
 		mPermissionRequestActivity = new PermissionRequestActivity();
 		mPreferencesHelper = new PreferencesHelper(this);
 		mGoogleApiClient = new GoogleApiClient.Builder(this)
@@ -57,11 +67,11 @@ public class MapLocationService extends Service implements GoogleApiClient.Conne
 				.addApi(LocationServices.API)
 				.build();
 		long interval = (long) (mPreferencesHelper.getMinutes() * 1000 * 60);
+		interval = 1000;
 		mLocationRequest = LocationRequest.create()
 				.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
 				.setInterval(interval)
 				.setFastestInterval(interval);
-
 	}
 
 	@Nullable
@@ -88,6 +98,7 @@ public class MapLocationService extends Service implements GoogleApiClient.Conne
 	@Override
 	public void onConnected(@Nullable Bundle bundle) {
 		if (hasLocationPermission()) {
+			Log.d(TAG, "Has location permissions");
 			LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
 			getLocation();
 		}
@@ -113,12 +124,14 @@ public class MapLocationService extends Service implements GoogleApiClient.Conne
 
 	@Override
 	public void onLocationChanged(Location location) {
+		Log.d(TAG, "Location changed");
 		loadNewPosition(location);
 	}
 
 	// local methods
 
 	private boolean hasLocationPermission() {
+		// if we are below API 23, we already have permission from when the app was installed
 		if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 			if (checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
 					&& checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
@@ -134,7 +147,12 @@ public class MapLocationService extends Service implements GoogleApiClient.Conne
 
 	private void loadNewPosition(Location location) {
 		Log.d(TAG, location.toString());
-//		mMapsActivity.loadNewPosition(new Position(location.getLatitude(), location.getLongitude(), new Date()));
+		Position position = new Position(location.getLatitude(), location.getLongitude(), new Date());
+		mSqlManager.insertPosition(position);
+
+		Intent intent = new Intent(INTENT_LOCATION_RECEIVED);
+		intent.putExtra(EXTRA_LOCATION, position);
+		LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 	}
 
 	// local classes

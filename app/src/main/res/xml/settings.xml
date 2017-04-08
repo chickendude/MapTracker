@@ -13,5 +13,11 @@
 		android:defaultValue="15"
 		android:summary="How many minutes to wait between polling the phone for a new GPS location"
 		android:title="Minutes between update"/>
+	<EditTextPreference
+		android:key="minMetersForNewLocation"
+		android:numeric="integer"
+		android:defaultValue="15"
+		android:summary="How many far a new position needs to be from the last position before it gets marked as a new location"
+		android:title="Meters Between Location"/>
 
 </PreferenceScreen>

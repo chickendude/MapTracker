@@ -1,12 +1,15 @@
 package ch.ralena.maptracker.objects;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import java.util.Date;
 
 /**
  * Created by crater-windoze on 3/18/2017.
  */
 
-public class Position {
+public class Position implements Parcelable {
 	private double mLatitude;
 	private double mLongitude;
 	private Date mDate;
@@ -16,6 +19,34 @@ public class Position {
 		mLongitude = longitude;
 		mDate = date;
 	}
+
+	protected Position(Parcel in) {
+		mLatitude = in.readDouble();
+		mLongitude = in.readDouble();
+	}
+
+	@Override
+	public void writeToParcel(Parcel dest, int flags) {
+		dest.writeDouble(mLatitude);
+		dest.writeDouble(mLongitude);
+	}
+
+	@Override
+	public int describeContents() {
+		return 0;
+	}
+
+	public static final Creator<Position> CREATOR = new Creator<Position>() {
+		@Override
+		public Position createFromParcel(Parcel in) {
+			return new Position(in);
+		}
+
+		@Override
+		public Position[] newArray(int size) {
+			return new Position[size];
+		}
+	};
 
 	public double getLatitude() {
 		return mLatitude;
