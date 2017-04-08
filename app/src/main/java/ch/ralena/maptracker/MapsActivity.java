@@ -144,16 +144,6 @@ public class MapsActivity extends Activity implements
 		});
 	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-	}
-
 	/**
 	 * Manipulates the map once available.
 	 * This callback is triggered when the map is ready to be used.
@@ -199,8 +189,6 @@ public class MapsActivity extends Activity implements
 	// run when we get a new position from LocationHelper
 	public void loadNewPosition(Position position) {
 		mPositions.add(position);
-//		mSqlManager.insertPosition(position); // returns id as a long value
-
 		// format date to local time format
 		String date = SimpleDateFormat.getDateTimeInstance().format(position.getDate());
 		// Add a marker and move the camera there

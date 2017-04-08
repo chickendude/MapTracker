@@ -17,7 +17,7 @@
 		android:key="minMetersForNewLocation"
 		android:numeric="integer"
 		android:defaultValue="15"
-		android:summary="How many far a new position needs to be from the last position before it gets marked as a new location"
-		android:title="Meters Between Location"/>
+		android:summary="How far a new position needs to be from the last position before it gets marked as a new location"
+		android:title="Meters between location"/>
 
 </PreferenceScreen>
