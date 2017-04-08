@@ -9,13 +9,17 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -23,6 +27,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.text.SimpleDateFormat;
@@ -157,6 +162,34 @@ public class MapsActivity extends Activity implements
 	public void onMapReady(GoogleMap googleMap) {
 		Log.d(TAG, "onMapReady");
 		mMap = googleMap;
+		// allow adapter to have multi-line snippet
+		mMap.setInfoWindowAdapter(new GoogleMap.InfoWindowAdapter() {
+			@Override
+			public View getInfoWindow(Marker arg0) {
+				return null;
+			}
+
+			@Override
+			public View getInfoContents(Marker marker) {
+				LinearLayout view = new LinearLayout(MapsActivity.this);
+				view.setOrientation(LinearLayout.VERTICAL);
+
+				TextView title = new TextView(MapsActivity.this);
+				title.setTextColor(Color.BLACK);
+				title.setGravity(Gravity.CENTER);
+				title.setTypeface(null, Typeface.BOLD);
+				title.setText(marker.getTitle());
+
+				TextView snippet = new TextView(MapsActivity.this);
+				snippet.setTextColor(Color.GRAY);
+				snippet.setText(marker.getSnippet());
+
+				view.addView(title);
+				view.addView(snippet);
+
+				return view;
+			}
+		});
 		loadPositions();
 	}
 
@@ -178,7 +211,6 @@ public class MapsActivity extends Activity implements
 		// check if we got a result
 		if (requestCode == PERMISSION_FINE_LOCATION) {
 			if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-				// Add a marker in Sydney and move the camera
 				if (mIsBound) {
 					mMapLocationService.getLocation();
 				}
@@ -193,7 +225,10 @@ public class MapsActivity extends Activity implements
 		String date = SimpleDateFormat.getDateTimeInstance().format(position.getDate());
 		// Add a marker and move the camera there
 		LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-		mMap.addMarker(new MarkerOptions().position(latLng).title("Here on " + date));
+		mMap.addMarker(new MarkerOptions()
+				.position(latLng)
+				.title("Here on " + date)
+				.snippet("Latitude: " + position.getLatitude() + "\nLongitude: " + position.getLongitude()));
 		// check whether we should move the map or not
 		if (mPreferencesHelper.isMoveMap()) {
 			mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
@@ -207,7 +242,11 @@ public class MapsActivity extends Activity implements
 			String date = SimpleDateFormat.getDateTimeInstance().format(position.getDate());
 			// Add a marker
 			LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
-			mMap.addMarker(new MarkerOptions().position(latLng).title("Here on " + date));
+			Log.d(TAG, latLng.toString());
+			mMap.addMarker(new MarkerOptions()
+					.position(latLng)
+					.title("Here on " + date)
+					.snippet("Latitude: " + position.getLatitude() + "\nLongitude: " + position.getLongitude()));
 		}
 	}
 }

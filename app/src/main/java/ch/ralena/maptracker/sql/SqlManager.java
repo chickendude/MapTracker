@@ -44,8 +44,8 @@ public class SqlManager {
 				int longitudeIndex = itemCursor.getColumnIndex(SqlHelper.COL_POSITION_LONGITUDE);
 				int dateIndex = itemCursor.getColumnIndex(SqlHelper.COL_POSITION_DATE);
 				// get cursor values
-				long latitude = itemCursor.getLong(latitudeIndex);
-				long longitude = itemCursor.getLong(longitudeIndex);
+				double latitude = itemCursor.getDouble(latitudeIndex);
+				double longitude = itemCursor.getDouble(longitudeIndex);
 				Date date = new Date((long)itemCursor.getInt(dateIndex)*1000);
 				// add to ArrayList
 				positions.add(new Position(latitude, longitude, date));
