@@ -13,6 +13,7 @@ public class Position implements Parcelable {
 	private double mLatitude;
 	private double mLongitude;
 	private Date mDate;
+	private boolean mIsVisible;
 
 	public Position(double latitude, double longitude, Date date) {
 		mLatitude = latitude;
@@ -47,6 +48,14 @@ public class Position implements Parcelable {
 			return new Position[size];
 		}
 	};
+
+	public boolean isVisible() {
+		return mIsVisible;
+	}
+
+	public void setVisible(boolean visible) {
+		mIsVisible = visible;
+	}
 
 	public double getLatitude() {
 		return mLatitude;
