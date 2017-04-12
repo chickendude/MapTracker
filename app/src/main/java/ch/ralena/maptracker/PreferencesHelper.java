@@ -10,8 +10,8 @@ import android.preference.PreferenceManager;
 
 public class PreferencesHelper {
 	public static final String MINUTES_BETWEEN_UPDATE = "minutesBetweenUpdate";
-	public static final String MOVE_MAP = "moveMap";
 	public static final String METERS_BETWEEN_LOCATION = "minMetersForNewLocation";
+	public static final String MOVE_MAP = "moveMap";
 
 	private Context mContext;
 	private SharedPreferences mSharedPreferences;
@@ -30,8 +30,8 @@ public class PreferencesHelper {
 		return Float.parseFloat(minutes);
 	}
 
-	public String getMetersBetweenLocation() {
-		return mSharedPreferences.getString(METERS_BETWEEN_LOCATION, "15");
+	public long getMetersBetweenLocation() {
+		return Long.parseLong(mSharedPreferences.getString(METERS_BETWEEN_LOCATION, "15"));
 	}
 
 	public SharedPreferences getSharedPreferences() {

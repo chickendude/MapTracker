@@ -47,6 +47,7 @@ public class MapsActivity extends Activity implements
 	public static final String TAG = MapsActivity.class.getSimpleName();
 	private static final int PERMISSION_FINE_LOCATION = 100;
 	private static final String TAG_FILTER_FRAGMENT = "tag_filter_fragment";
+	private static final String BUNDLE_LOCATION_SERVICE = "bundle_location_service";
 
 	private GoogleMap mMap;
 	private PreferencesHelper mPreferencesHelper;

@@ -66,12 +66,13 @@ public class MapLocationService extends Service implements GoogleApiClient.Conne
 				.addOnConnectionFailedListener(this)
 				.addApi(LocationServices.API)
 				.build();
-		long interval = (long) (mPreferencesHelper.getMinutes() * 1000 * 60);
-		interval = 1000;
+		// 1000 milliseconds in a second * 60 seconds in a minute
+		long locationRequestInterval = (long) (mPreferencesHelper.getMinutes() * 1000 * 60);
+		long smallestDisplacement = mPreferencesHelper.getMetersBetweenLocation();
 		mLocationRequest = LocationRequest.create()
 				.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY)
-				.setInterval(interval)
-				.setFastestInterval(interval);
+				.setInterval(locationRequestInterval)
+				.setSmallestDisplacement(smallestDisplacement);
 		mGoogleApiClient.connect();
 	}
 
@@ -156,6 +157,14 @@ public class MapLocationService extends Service implements GoogleApiClient.Conne
 		LocalBroadcastManager.getInstance(this).sendBroadcast(intent);
 	}
 
+	private void restartLocationUpdateService() {
+		LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+		Log.d(TAG, "interval: " + mLocationRequest.getInterval());
+		Log.d(TAG, "displacement: " + mLocationRequest.getSmallestDisplacement());
+		LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+
+	}
+
 	// local classes
 
 	public class LocalBinder extends Binder {
@@ -184,4 +193,16 @@ public class MapLocationService extends Service implements GoogleApiClient.Conne
 			}
 		}
 	}
+
+	public void setLocationRequestInterval(float locationRequestInterval) {
+		Log.d(TAG, "Update Location Request Interval");
+		mLocationRequest.setInterval((long) (locationRequestInterval * 1000 * 60));
+		restartLocationUpdateService();
+	}
+
+	public void setSmallestDisplacement(float smallestDisplacement) {
+		mLocationRequest.setSmallestDisplacement(smallestDisplacement);
+		restartLocationUpdateService();
+	}
+
 }
