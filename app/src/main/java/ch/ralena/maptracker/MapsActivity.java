@@ -197,7 +197,8 @@ public class MapsActivity extends Activity implements
 				return view;
 			}
 		});
-		mCurDateRange = loadMarkers();
+		mCurDateRange = getCurDateRange();
+		loadMarkers();
 	}
 
 	public void checkLocationPermission() {
@@ -227,35 +228,53 @@ public class MapsActivity extends Activity implements
 
 	// run when we get a new position from LocationHelper
 	public void loadNewPosition(Position position) {
+		// add position to ArrayList
 		mPositions.add(position);
-		LatLng latLng = addMapMarker(position);
-
+		// add to map
+		addMapMarker(position);
 		// check whether we should move the map or not
 		if (mPreferencesHelper.isMoveMap()) {
+			LatLng latLng = new LatLng(position.getLatitude(), position.getLongitude());
 			mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 		}
 	}
 
-	public DateRange loadMarkers() {
-		for (Position position : mPositions) {
-			// format date to local time format
-			String date = SimpleDateFormat.getDateTimeInstance().format(position.getDate());
-			// Add a marker
-			addMapMarker(position);
-		}
+	private DateRange getCurDateRange() {
+		Log.d(TAG, "getCurDateRange");
 		// create daterange
 		Calendar startDate = Calendar.getInstance();
 		Calendar endDate = Calendar.getInstance();
 		if (mPositions.size() > 0) {
+			Log.d(TAG, "Loading dates from mPosition");
 			Date start = mPositions.get(0).getDate();
 			Date end = mPositions.get(mPositions.size()-1).getDate();
 			startDate.setTime(start);
 			endDate.setTime(end);
 		}
+		// set to start and end of day
+		startDate.set(Calendar.HOUR_OF_DAY, 0);
+		startDate.set(Calendar.MINUTE, 0);
+		startDate.set(Calendar.SECOND, 0);
+		endDate.set(Calendar.HOUR_OF_DAY, 23);
+		endDate.set(Calendar.MINUTE, 59);
+		endDate.set(Calendar.SECOND, 59);
 		return new DateRange(startDate, endDate);
 	}
 
-	private LatLng addMapMarker(Position position) {
+	public void loadMarkers() {
+		String curDate = SimpleDateFormat.getDateTimeInstance().format(mCurDateRange.getStartDate().getTime()) + " - " + SimpleDateFormat.getDateTimeInstance().format(mCurDateRange.getEndDate().getTime());
+		Log.d(TAG, "Current filter range is: " + curDate);
+		for (Position position : mPositions) {
+
+			if (position.getDate().after(mCurDateRange.getStartDate().getTime())
+					&& position.getDate().before(mCurDateRange.getEndDate().getTime())) {
+				// Add a marker
+				addMapMarker(position);
+			}
+		}
+	}
+
+	private void addMapMarker(Position position) {
 		// format date to local time format
 		String date = SimpleDateFormat.getDateTimeInstance().format(position.getDate());
 		// Add a marker and move the camera there
@@ -264,13 +283,12 @@ public class MapsActivity extends Activity implements
 				.position(latLng)
 				.title("Here on " + date)
 				.snippet("Latitude: " + position.getLatitude() + "\nLongitude: " + position.getLongitude()));
-		return latLng;
 	}
 
 	@Override
 	public void onDateChanged() {
 		Log.d(TAG, "Date changed!");
-		mPositions = mSqlManager.getPositions(mCurDateRange);
+//		mPositions = mSqlManager.getPositions(mCurDateRange);
 		mMap.clear();
 		loadMarkers();
 	}

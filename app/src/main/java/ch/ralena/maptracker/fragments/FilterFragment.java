@@ -69,12 +69,12 @@ public class FilterFragment extends DialogFragment {
 				DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
 					@Override
 					public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-						mDateChangeListener.onDateChanged();
 						mStartDate.set(year, month, day);
 						if (mStartDate.compareTo(mEndDate) == 1) {
 							mEndDate.set(year, month, day);
 						}
 						updateDateTexts();
+						mDateChangeListener.onDateChanged();
 					}
 				}, mStartDate.get(Calendar.YEAR), mStartDate.get(Calendar.MONTH), mStartDate.get(Calendar.DAY_OF_MONTH));
 				datePickerDialog.show();
@@ -86,12 +86,12 @@ public class FilterFragment extends DialogFragment {
 				DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(), new DatePickerDialog.OnDateSetListener() {
 					@Override
 					public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-						mDateChangeListener.onDateChanged();
 						mEndDate.set(year, month, day, 23, 59, 59);
 						if (mStartDate.compareTo(mEndDate) == 1) {
-							mEndDate.set(year, month, day);
+							mStartDate.set(year, month, day);
 						}
 						updateDateTexts();
+						mDateChangeListener.onDateChanged();
 					}
 				}, mEndDate.get(Calendar.YEAR), mEndDate.get(Calendar.MONTH), mEndDate.get(Calendar.DAY_OF_MONTH));
 				datePickerDialog.show();

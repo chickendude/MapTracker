@@ -145,13 +145,10 @@ public class MapLocationService extends Service implements GoogleApiClient.Conne
 		}
 	}
 
-
-	static int number = 0;
-
 	private void loadNewPosition(Location location) {
 		Log.d(TAG, location.toString());
 		Position position = new Position(location.getLatitude(), location.getLongitude(), new Date());
-		position.getDate().setTime(position.getDate().getTime() + number++ * 1000 * 60 * 60 * 12);
+		position.getDate().setTime(position.getDate().getTime());
 		mSqlManager.insertPosition(position);
 
 		Intent intent = new Intent(INTENT_LOCATION_RECEIVED);

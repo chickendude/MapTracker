@@ -8,7 +8,6 @@ import android.database.sqlite.SQLiteDatabase;
 import java.util.ArrayList;
 import java.util.Date;
 
-import ch.ralena.maptracker.objects.DateRange;
 import ch.ralena.maptracker.objects.Position;
 
 /**
@@ -38,16 +37,7 @@ public class SqlManager {
 		return getPositionsSql("SELECT * FROM " + SqlHelper.TABLE_POSITION);
 	}
 
-
-	public ArrayList<Position> getPositions(DateRange curDateRange) {
-		int startDate = (int) (curDateRange.getStartDate().getTimeInMillis()/1000);
-		int endDate = (int) (curDateRange.getEndDate().getTimeInMillis()/1000);
-		return getPositionsSql("SELECT * FROM " + SqlHelper.TABLE_POSITION +
-				String.format(" WHERE %s >= %d AND %s <= %d", SqlHelper.COL_POSITION_DATE, startDate,
-						SqlHelper.COL_POSITION_DATE, endDate));
-	}
-
-	public ArrayList<Position> getPositionsSql(String query) {
+	private ArrayList<Position> getPositionsSql(String query) {
 		ArrayList<Position> positions = new ArrayList<>();
 		SQLiteDatabase database = mSqlHelper.getWritableDatabase();
 		Cursor cursor = database.rawQuery(query, null);
