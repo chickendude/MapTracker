@@ -173,7 +173,7 @@ public class MapLocationService extends Service implements GoogleApiClient.Conne
 		}
 	}
 
-	public class PermissionRequestActivity extends AppCompatActivity {
+	public static class PermissionRequestActivity extends AppCompatActivity {
 
 	}
 
